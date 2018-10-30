@@ -120,8 +120,11 @@ public class FCMPlugin extends CordovaPlugin {
         //});
 		return true;
 	}
-	
-	public static void sendPushPayload(Map<String, Object> payload) {
+
+    /**
+	 * Sends the push payload to the app. If the view is not available false will be returned otherwise true
+	 */
+	public static boolean sendPushPayload(Map<String, Object> payload) {
 		Log.d(TAG, "==> FCMPlugin sendPushPayload");
 		Log.d(TAG, "\tnotificationCallBackReady: " + notificationCallBackReady);
 		Log.d(TAG, "\tgWebView: " + gWebView);
@@ -135,13 +138,16 @@ public class FCMPlugin extends CordovaPlugin {
 			if(notificationCallBackReady && gWebView != null){
 				Log.d(TAG, "\tSent PUSH to view: " + callBack);
 				gWebView.sendJavascript(callBack);
+				return true;
 			}else {
 				Log.d(TAG, "\tView not ready. SAVED NOTIFICATION: " + callBack);
 				lastPush = payload;
+				return false;
 			}
 		} catch (Exception e) {
 			Log.d(TAG, "\tERROR sendPushToView. SAVED NOTIFICATION: " + e.getMessage());
 			lastPush = payload;
+			return false;
 		}
 	}
 
