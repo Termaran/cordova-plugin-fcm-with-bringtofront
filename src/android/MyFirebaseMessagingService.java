@@ -49,10 +49,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 		
 		Log.d(TAG, "\tNotification Data: " + data.toString());
-        FCMPlugin.sendPushPayload( data );
+        if(!FCMPlugin.sendPushPayload( data )) {
+            this.bringToFront();
+        }
         //sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody(), remoteMessage.getData());
     }
     // [END receive_message]
+
+    /**
+     * Start the application. Function should be called if app is not running.
+     */
+    private void bringToFront() {
+        Log.d(TAG, "APP will be brought to front because it is running in background");
+        Intent notificationIntent = new Intent(this, FCMPluginActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, notificationIntent,
+        PendingIntent.FLAG_ONE_SHOT);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+			e.printStackTrace();
+        }
+	}
 
     /**
      * Create and show a simple notification containing the received FCM message.
