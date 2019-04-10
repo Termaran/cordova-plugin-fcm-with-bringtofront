@@ -1,9 +1,10 @@
 package com.gae.scaffolder.plugin;
 
 import android.app.NotificationManager;
-import 	android.app.NotificationChannel;
+import android.app.NotificationChannel;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.media.AudioAttributes;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -105,11 +106,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         final String NOTIFICATION_CHANNEL_ID = "10001";
-    
+        AudioAttributes att = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build(); 
         int importance = NotificationManager.IMPORTANCE_HIGH;
         NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
         notificationChannel.enableLights(true);
         notificationChannel.setLightColor(Color.RED);
+        notificationChannel.setSound(defaultSoundUri, att);
         notificationChannel.enableVibration(true);
         notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
         assert notificationManager != null;
