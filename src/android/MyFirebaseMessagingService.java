@@ -1,6 +1,7 @@
 package com.gae.scaffolder.plugin;
 
 import android.app.NotificationManager;
+import 	android.app.NotificationChannel;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -88,7 +89,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(getApplicationInfo().icon)
                 .setContentTitle(title)
                 .setContentText(messageBody)
@@ -96,11 +97,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
 
-        Notification notification = notificationBuilder.build();
+        Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT;
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        final String NOTIFICATION_CHANNEL_ID = "10001";
+    
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
+        notificationChannel.enableLights(true);
+        notificationChannel.setLightColor(Color.RED);
+        notificationChannel.enableVibration(true);
+        notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        assert notificationManager != null;
+        mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+        notificationManager.createNotificationChannel(notificationChannel);
 
         notificationManager.notify(0 /* ID of notification */, notification);
     }
