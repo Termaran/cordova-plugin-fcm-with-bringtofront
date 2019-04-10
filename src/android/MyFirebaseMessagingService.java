@@ -99,9 +99,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
 
-        Notification notification = mBuilder.build();
-        notification.flags |= Notification.FLAG_INSISTENT;
-
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -120,6 +117,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         assert notificationManager != null;
         mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
         notificationManager.createNotificationChannel(notificationChannel);
+
+        Notification notification = mBuilder.build();
+        notification.flags |= Notification.FLAG_INSISTENT;
 
         notificationManager.notify(0 /* ID of notification */, notification);
     }
