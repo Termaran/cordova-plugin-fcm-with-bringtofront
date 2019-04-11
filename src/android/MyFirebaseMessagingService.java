@@ -38,12 +38,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
         Log.d(TAG, "==> MyFirebaseMessagingService onMessageReceived");
-		
+
 		if( remoteMessage.getNotification() != null){
 			Log.d(TAG, "\tNotification Title: " + remoteMessage.getNotification().getTitle());
 			Log.d(TAG, "\tNotification Message: " + remoteMessage.getNotification().getBody());
 		}
-		
+
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("wasTapped", false);
 		for (String key : remoteMessage.getData().keySet()) {
@@ -51,13 +51,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Log.d(TAG, "\tKey: " + key + " Value: " + value);
 				data.put(key, value);
         }
-		
+
 		Log.d(TAG, "\tNotification Data: " + data.toString());
         if(!FCMPlugin.sendPushPayload( data )) {
             this.bringToFront();
         }
-        
-        // Display a notification 
+
+        // Display a notification
         sendNotification((data.get("title") != null ? data.get("title").toString() : "Kein Titel"), (data.get("message") != null ? data.get("message").toString() : "Keine Nachricht"));
     }
     // [END receive_message]
@@ -86,7 +86,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(String title, String messageBody) {
         Intent intent = new Intent(this, FCMPluginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		
+
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
@@ -101,26 +101,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        final String NOTIFICATION_CHANNEL_ID = "10001";
-        AudioAttributes att = new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .build(); 
-        int importance = NotificationManager.IMPORTANCE_HIGH;
-        NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
-        notificationChannel.enableLights(true);
-        notificationChannel.setLightColor(Color.RED);
-        notificationChannel.setSound(defaultSoundUri, att);
-        notificationChannel.enableVibration(true);
-        notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-        assert notificationManager != null;
-        mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
-        notificationManager.createNotificationChannel(notificationChannel);
+        final int NOTIFICATION_ID = 1;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            final String NOTIFICATION_CHANNEL_ID = "10001";
+            AudioAttributes att = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build();
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "PUSH_CHANNEL", importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setImportance(importance);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            notificationChannel.setSound(defaultSoundUri, att);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            assert notificationManager != null;
+            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
 
         Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT;
 
-        notificationManager.notify(0 /* ID of notification */, notification);
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 }
