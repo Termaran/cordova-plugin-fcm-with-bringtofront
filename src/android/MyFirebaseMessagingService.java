@@ -18,7 +18,6 @@ import java.util.HashMap;
 import android.R.drawable;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.sun.org.apache.xml.internal.utils.URI;
 
 import android.graphics.BitmapFactory;
 import android.content.res.AssetManager;
@@ -70,10 +69,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     Log.d(TAG, "\tNotification Data: " + data.toString());
-    if (!data.get("type").toString().equals("CANCEL")) {
+    if (data.get("type") == null || !data.get("type").toString().equals("CANCEL")) {
       StatusBarNotification[] oldNotifications = notificationManager.getActiveNotifications();
       if (!notificationActive(oldNotifications)) {
-        callId = data.get("call_id").toString();
+        if (data.get("call_id") != null) {
+          callId = data.get("call_id").toString();
+        }
         if (!FCMPlugin.sendPushPayload(data)) {
           this.bringToFront();
         }
@@ -86,9 +87,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager);
       }
     } else {
-      String x = data.get("type").toString();
       Log.d(TAG, getApplicationInfo().packageName);
-      if (data.get("call_id").toString().equals(callId)) {
+      if (data.get("call_id") != null && data.get("call_id").toString().equals(callId)) {
         notificationManager.cancel(NOTIFICATION_ID);
         callId = "";
       }
@@ -166,11 +166,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     notification.flags |= Notification.FLAG_INSISTENT;
 
     notificationManager.notify(NOTIFICATION_ID, notification);
-  }
-
-  private void loadSoundFileToFolder(String path) {
-    InputStream soundFileStream = getAssets().open(path);
-    URI testUri = Uri.parseFile(new File(soundFileStream));
-    Log.d(TAG, testUri.toString());
   }
 }
