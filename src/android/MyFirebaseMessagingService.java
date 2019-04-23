@@ -72,9 +72,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     if (data.get("type") == null || !data.get("type").toString().equals("CANCEL")) {
       StatusBarNotification[] oldNotifications = notificationManager.getActiveNotifications();
       if (!notificationActive(oldNotifications)) {
-        if (data.get("call_id") != null) {
-          callId = data.get("call_id").toString();
-        }
+
         if (!FCMPlugin.sendPushPayload(data)) {
           this.bringToFront();
         }
@@ -87,11 +85,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager);
       }
     } else {
-      Log.d(TAG, getApplicationInfo().packageName);
-      if (data.get("call_id") != null && data.get("call_id").toString().equals(callId)) {
-        notificationManager.cancel(NOTIFICATION_ID);
-        callId = "";
-      }
+      notificationManager.cancel(NOTIFICATION_ID);
 
     }
   }
@@ -135,8 +129,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
         PendingIntent.FLAG_ONE_SHOT);
     Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-
-    Log.d(TAG, "URI OF SOUND: " + defaultSoundUri.toString());
     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
         .setSmallIcon(android.R.drawable.sym_call_incoming)
         .setLargeIcon(BitmapFactory.decodeResource(getResources(), android.R.drawable.sym_call_incoming))
