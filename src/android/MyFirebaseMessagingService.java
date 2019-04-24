@@ -34,7 +34,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
   private static final String TAG = "FCMPlugin";
   private static final int NOTIFICATION_ID = 1;
-  private String callId = "";
 
   /**
    * Called when message is received.
@@ -129,6 +128,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
         PendingIntent.FLAG_ONE_SHOT);
     Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+
+    
     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
         .setSmallIcon(android.R.drawable.sym_call_incoming)
         .setLargeIcon(BitmapFactory.decodeResource(getResources(), android.R.drawable.sym_call_incoming))
