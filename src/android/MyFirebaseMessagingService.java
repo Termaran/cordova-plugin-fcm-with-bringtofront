@@ -75,6 +75,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (!FCMPlugin.sendPushPayload(data)) {
           this.bringToFront();
         }
+        
+        if (data.get("caller_name") != null && data.get("caller_name").toString().equals("<null>")) {
+          if (data.get("caller_number") != null) {
+            data.put("caller_name", data.get("caller_number").toString());
+          }
+        }
 
         // Display a notification
         sendNotification((data.get("title") != null ? data.get("title").toString() : getApplicationInfo().name),
