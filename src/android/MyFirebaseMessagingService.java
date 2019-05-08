@@ -41,6 +41,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
    * @param remoteMessage Object representing the message received from Firebase
    *                      Cloud Messaging.
    */
+
+   //Token refresh
+  @Override
+  public void onNewToken(String s) {
+      super.onNewToken(s);
+      Log.d(TAG, "Refreshed token: " + s);
+      FCMPlugin.sendTokenRefresh( s );
+  }
+  
   // [START receive_message]
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
