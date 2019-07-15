@@ -77,9 +77,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     Log.d(TAG, "\tNotification Data: " + data.toString());
+    
+    StatusBarNotification[] oldNotifications = notificationManager.getActiveNotifications();
+    boolean hasNotification = notificationActive(oldNotifications);
     if (data.get("type") == null || !data.get("type").toString().equals("CANCEL")) {
-      StatusBarNotification[] oldNotifications = notificationManager.getActiveNotifications();
-      if (!notificationActive(oldNotifications)) {
+      if (!hasNotification) {
 
         if (!FCMPlugin.sendPushPayload(data)) {
           this.bringToFront();
@@ -99,7 +101,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager);
       }
     } else {
-      notificationManager.cancel(NOTIFICATION_ID);
+      if (hasNotification) {
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+          @Override
+          public void run() {
+            notificationManager.cancel(NOTIFICATION_ID);
+          }
+        }, 1500);
+      }
+       else {
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+          @Override
+          public void run() {
+            notificationManager.cancel(NOTIFICATION_ID);
+          }
+        }, 3500);
+       }
 
     }
   }
