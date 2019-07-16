@@ -166,7 +166,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         .setSmallIcon(android.R.drawable.sym_call_incoming)
         .setLargeIcon(BitmapFactory.decodeResource(getResources(), android.R.drawable.sym_call_incoming))
         .setContentTitle(getApplicationInfo().name).setContentText(messageBody).setAutoCancel(true)
-        .setSound(defaultSoundUri).setContentIntent(pendingIntent).setTimeoutAfter(20000);
+        .setSound(defaultSoundUri).setContentIntent(pendingIntent).setTimeoutAfter(6000);
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
       final String NOTIFICATION_CHANNEL_ID = "10001";
